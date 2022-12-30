@@ -85,6 +85,7 @@ const userSchema = new mongoose.Schema(
         return token;
     };
 
+// Code for login
     userSchema.statics.findByCredentials = async (email, password) => {
         const user = await User.findOne({ email });
 
