@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
         },
         age: {
             type: Number,
-            required: true,
+            // required: true,
             default: 0,
             validate(value) {
                 if (value < 18) throw new Error('Age must be a positive number.')
@@ -106,7 +106,7 @@ const userSchema = new mongoose.Schema(
     userSchema.pre('save', async function (next) {
         const user = this;
         
-        console.log('Just before saving :P');
+        // console.log('Just before saving :P');
 
         if (user.isModified('password')) {
             user.password = await bcrypt.hash(user.password, 8)
