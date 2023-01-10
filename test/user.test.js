@@ -1,29 +1,12 @@
 const request = require('supertest');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 const app = require('../src/app');
 const User = require('../src/models/user');
+const { userOneId, userOne, setUpDatabase } = require('./fixtures/db');
 
-const userOneId = new mongoose.Types.ObjectId()
-const userOne = {
-  _id: userOneId,
-  name: 'Mike',
-  age: 22,
-  email: 'mike@example.com',
-  password: '56what!!',
-  tokens: [{
-    token: jwt.sign({_id: userOneId}, process.env.JWT_SECRET)
-  }]
-};
-
+// beforeEach(setUpDatabase);
 beforeEach(async () => {
-    await User.deleteMany();
-    await new User(userOne).save();
+  await setUpDatabase();
 });
-
-afterAll(async () => { 
-    await mongoose.connection.close()
-})
 
 test('Should sign up a new user', async () => {
     const response = await request(app).post('/users').send({
@@ -100,11 +83,9 @@ test('Should upload avatar image', async() => {
     await request(app)
         .post('/users/me/avatar')
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
-        .attach('avatar', 'test/fixtures/profilepic.jpg')
+        .attach('avatar', 'test/fixtures/profile-pic.jpg')
         .expect(200);
     const user = await User.findById(userOneId)
-    // two objetcs are not equal (===) even if they have exactly same properties
-    // expect({}).toEqual({})
     expect(user.avatar).toEqual(expect.any(Buffer))
 });
 
@@ -129,4 +110,3 @@ test('Should not update valid User fields', async() => {
             })
             .expect(400);
 });
-
