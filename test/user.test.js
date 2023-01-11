@@ -3,10 +3,7 @@ const app = require('../src/app');
 const User = require('../src/models/user');
 const { userOneId, userOne, setUpDatabase } = require('./fixtures/db');
 
-// beforeEach(setUpDatabase);
-beforeEach(async () => {
-  await setUpDatabase();
-});
+beforeEach(setUpDatabase);
 
 test('Should sign up a new user', async () => {
     const response = await request(app).post('/users').send({
